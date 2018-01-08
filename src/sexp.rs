@@ -31,7 +31,7 @@ impl Sexp {
         Sexp::List(Vec::new())
     }
 
-    pub fn is_empty_list(&self) -> bool {
+    pub fn is_unit(&self) -> bool {
         match self {
             &Sexp::List(ref l) => l.len() == 0,
             _ => false
