@@ -1,12 +1,12 @@
 use std::fmt;
 
-use serde::de::{Deserialize, Deserializer, Visitor, SeqAccess, Error};
+use serde::de::{Deserialize, Deserializer, Error, SeqAccess, Visitor};
 
 use sexp::Sexp;
 
 struct SexpVisitor;
 
-impl <'de> Visitor<'de> for SexpVisitor {
+impl<'de> Visitor<'de> for SexpVisitor {
     type Value = Sexp;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -26,7 +26,8 @@ impl <'de> Visitor<'de> for SexpVisitor {
     }
 
     fn visit_seq<A>(self, mut access: A) -> Result<Self::Value, A::Error>
-        where A: SeqAccess<'de>
+    where
+        A: SeqAccess<'de>,
     {
         let mut seq = Vec::with_capacity(access.size_hint().unwrap_or(0));
 
@@ -38,11 +39,15 @@ impl <'de> Visitor<'de> for SexpVisitor {
     }
 }
 
-
-impl <'de> Deserialize<'de> for Sexp {
+impl<'de> Deserialize<'de> for Sexp {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
+    where
+        D: Deserializer<'de>,
     {
         deserializer.deserialize_seq(SexpVisitor)
     }
 }
+
+/*impl <'de> Deserializer<'de> for Sexp {
+
+}*/

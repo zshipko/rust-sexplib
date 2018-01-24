@@ -5,7 +5,7 @@ use sexp::Sexp;
 
 pub struct Reader<R: Read>(io::BufReader<R>);
 
-impl <R: Read> Reader<R> {
+impl<R: Read> Reader<R> {
     pub fn new(r: R) -> Reader<R> {
         Reader(io::BufReader::new(r))
     }
@@ -23,14 +23,12 @@ impl <R: Read> Reader<R> {
         let mut insq = false;
         loop {
             match chars.next() {
-                Some('\\') if insq || indq  => {
-                    match chars.next() {
-                        Some(c) if c == '\'' || c == '"' => token.push(c),
-                        Some('n') => token.push('\n'),
-                        Some('t') => token.push('\t'),
-                        Some('r') => token.push('\r'),
-                        _ => ()
-                    }
+                Some('\\') if insq || indq => match chars.next() {
+                    Some(c) if c == '\'' || c == '"' => token.push(c),
+                    Some('n') => token.push('\n'),
+                    Some('t') => token.push('\t'),
+                    Some('r') => token.push('\r'),
+                    _ => (),
                 },
                 Some('\'') => {
                     if indq {
@@ -42,7 +40,7 @@ impl <R: Read> Reader<R> {
                     } else {
                         insq = true;
                     }
-                },
+                }
                 Some('"') => {
                     if insq {
                         token.push('"');
@@ -53,24 +51,22 @@ impl <R: Read> Reader<R> {
                     } else {
                         indq = true;
                     }
-                },
-                Some(c) if indq || insq => {
-                    token.push(c)
-                },
+                }
+                Some(c) if indq || insq => token.push(c),
                 Some('(') => {
                     if root {
                         root = false;
                     } else {
                         expr.push(Self::parse(chars)?)
                     }
-                },
+                }
                 Some(')') => {
                     if token.len() > 0 {
                         expr.push(Sexp::from(token));
                     }
 
                     return Ok(Sexp::List(expr));
-                },
+                }
                 Some(c) => if c.is_whitespace() {
                     if token.len() > 0 {
                         expr.push(Sexp::from(token));
@@ -79,7 +75,7 @@ impl <R: Read> Reader<R> {
                 } else {
                     token.push(c);
                 },
-                None => return Err(io::Error::from(io::ErrorKind::InvalidInput))
+                None => return Err(io::Error::from(io::ErrorKind::InvalidInput)),
             }
         }
     }
@@ -91,7 +87,7 @@ pub fn from_string<S: AsRef<str>>(s: &S) -> io::Result<Sexp> {
 }
 
 #[test]
-fn test_roundtrip(){
+fn test_roundtrip() {
     let s = "(a b c (1 2 3) (x) 't e s t')";
     let res = from_string(&s).unwrap();
     assert_eq!(::to_string(&res).unwrap(), s);

@@ -1,10 +1,12 @@
-use serde::ser::{Serialize, Serializer, SerializeSeq};
+use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 use sexp::Sexp;
+use error::Error;
 
 impl Serialize for Sexp {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: Serializer
+    where
+        S: Serializer,
     {
         match self {
             &Sexp::Atom(ref s) => serializer.serialize_str(s),
@@ -18,3 +20,8 @@ impl Serialize for Sexp {
         }
     }
 }
+
+/*impl Serializer for Sexp {
+    type Ok = Ok;
+    type Error = Error;
+}*/

@@ -5,7 +5,7 @@ use sexp::Sexp;
 
 pub struct Writer<W: io::Write>(io::BufWriter<W>);
 
-impl <W: io::Write> Writer<W> {
+impl<W: io::Write> Writer<W> {
     pub fn new(w: W) -> Writer<W> {
         Writer(io::BufWriter::new(w))
     }
@@ -13,11 +13,7 @@ impl <W: io::Write> Writer<W> {
     pub fn write(&mut self, expr: &Sexp) -> io::Result<()> {
         match expr {
             &Sexp::Atom(ref s) if s.contains(' ') || s.contains('(') || s.contains(')') => {
-                let b = if s.contains('\'') {
-                    b"\""
-                } else {
-                    b"'"
-                };
+                let b = if s.contains('\'') { b"\"" } else { b"'" };
 
                 self.0.write_all(b)?;
                 if s.contains('\'') && b == b"'" {
@@ -26,7 +22,7 @@ impl <W: io::Write> Writer<W> {
                     self.0.write_all(s.as_bytes())?;
                 }
                 self.0.write_all(b)
-            },
+            }
             &Sexp::Atom(ref s) => self.0.write_all(s.as_str().as_bytes()),
             &Sexp::List(ref l) => {
                 self.0.write_all(b"(")?;
@@ -44,7 +40,7 @@ impl <W: io::Write> Writer<W> {
     pub fn into_inner(self) -> Option<W> {
         match self.0.into_inner() {
             Ok(x) => Some(x),
-            Err(_) => None
+            Err(_) => None,
         }
     }
 }
@@ -58,10 +54,7 @@ pub fn to_string(expr: &Sexp) -> io::Result<String> {
         dst = wr.into_inner().unwrap();
     }
 
-
-    unsafe {
-        Ok(String::from_utf8_unchecked(dst))
-    }
+    unsafe { Ok(String::from_utf8_unchecked(dst)) }
 }
 
 #[cfg(test)]
@@ -69,12 +62,8 @@ mod test {
     use sexp;
 
     #[test]
-    fn test_write_simple(){
-        let s = list![
-            "a", "b", "c",
-            list![1, 2, 3],
-            "x y z'\""
-        ];
+    fn test_write_simple() {
+        let s = list!["a", "b", "c", list![1, 2, 3], "x y z'\""];
 
         let dst = ::to_string(&s).unwrap();
 
