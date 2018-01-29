@@ -1,7 +1,7 @@
 use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 use sexp::Sexp;
-use error::Error;
+use error;
 
 impl Serialize for Sexp {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -22,6 +22,7 @@ impl Serialize for Sexp {
 }
 
 /*impl Serializer for Sexp {
-    type Ok = Ok;
-    type Error = Error;
+    type Ok = ();
+    type Error = error::Error;
+
 }*/
