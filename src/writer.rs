@@ -2,6 +2,7 @@ use std::io;
 use std::io::prelude::*;
 
 use sexp::Sexp;
+use error::{Result};
 
 pub struct Writer<W: io::Write>(io::BufWriter<W>);
 
@@ -10,7 +11,7 @@ impl<W: io::Write> Writer<W> {
         Writer(io::BufWriter::new(w))
     }
 
-    pub fn write(&mut self, expr: &Sexp) -> io::Result<()> {
+    pub fn write(&mut self, expr: &Sexp) -> Result<()> {
         match expr {
             &Sexp::Atom(ref s) if s.contains(' ') || s.contains('(') || s.contains(')') => {
                 let b = if s.contains('\'') { b"\"" } else { b"'" };
@@ -21,9 +22,9 @@ impl<W: io::Write> Writer<W> {
                 } else {
                     self.0.write_all(s.as_bytes())?;
                 }
-                self.0.write_all(b)
+                Ok(self.0.write_all(b)?)
             }
-            &Sexp::Atom(ref s) => self.0.write_all(s.as_str().as_bytes()),
+            &Sexp::Atom(ref s) => Ok(self.0.write_all(s.as_str().as_bytes())?),
             &Sexp::List(ref l) => {
                 self.0.write_all(b"(")?;
                 for (n, item) in l.iter().enumerate() {
@@ -32,7 +33,7 @@ impl<W: io::Write> Writer<W> {
                     }
                     self.write(item)?
                 }
-                self.0.write_all(b")")
+                Ok(self.0.write_all(b")")?)
             }
         }
     }
@@ -45,7 +46,7 @@ impl<W: io::Write> Writer<W> {
     }
 }
 
-pub fn to_string(expr: &Sexp) -> io::Result<String> {
+pub fn to_string(expr: &Sexp) -> Result<String> {
     let mut dst = Vec::new();
 
     {

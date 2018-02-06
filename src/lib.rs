@@ -5,7 +5,7 @@ mod sexp;
 mod writer;
 mod reader;
 mod error;
-pub mod ser;
+//pub mod ser;
 pub mod de;
 
 pub use sexp::Sexp;

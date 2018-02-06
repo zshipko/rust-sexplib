@@ -2,6 +2,7 @@ use std::io;
 use std::io::prelude::*;
 
 use sexp::Sexp;
+use error::{Result, Error};
 
 pub struct Reader<R: Read>(io::BufReader<R>);
 
@@ -10,12 +11,12 @@ impl<R: Read> Reader<R> {
         Reader(io::BufReader::new(r))
     }
 
-    pub fn read(self) -> io::Result<Sexp> {
+    pub fn read(self) -> Result<Sexp> {
         let mut it = self.0.bytes().map(|x| x.unwrap() as char);
         Self::parse(&mut it)
     }
 
-    pub fn parse<T: Iterator<Item = char>>(chars: &mut T) -> io::Result<Sexp> {
+    pub fn parse<T: Iterator<Item = char>>(chars: &mut T) -> Result<Sexp> {
         let mut expr = vec![];
         let mut token = String::new();
         let mut root = true;
@@ -75,13 +76,13 @@ impl<R: Read> Reader<R> {
                 } else {
                     token.push(c);
                 },
-                None => return Err(io::Error::from(io::ErrorKind::InvalidInput)),
+                None => return Err(Error::IO(io::Error::from(io::ErrorKind::InvalidInput))),
             }
         }
     }
 }
 
-pub fn from_string<S: AsRef<str>>(s: &S) -> io::Result<Sexp> {
+pub fn from_string<S: AsRef<str>>(s: &S) -> Result<Sexp> {
     let rd = Reader::new(io::Cursor::new(s.as_ref()));
     rd.read()
 }
