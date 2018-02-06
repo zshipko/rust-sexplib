@@ -6,7 +6,7 @@ mod writer;
 mod reader;
 mod error;
 //pub mod ser;
-//pub mod de;
+pub mod de;
 
 pub use sexp::Sexp;
 pub use writer::{to_string, Writer};
