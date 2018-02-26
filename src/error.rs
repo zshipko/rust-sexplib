@@ -1,8 +1,6 @@
 use std;
 use std::result;
 
-use serde;
-
 #[derive(Debug)]
 pub enum Error {
     NotImplemented,
@@ -36,14 +34,3 @@ impl std::error::Error for Error {
     }
 }
 
-impl serde::ser::Error for Error {
-    fn custom<T: std::fmt::Display>(msg: T) -> Error {
-        Error::Message(format!("{}", msg))
-    }
-}
-
-impl serde::de::Error for Error {
-    fn custom<T: std::fmt::Display>(msg: T) -> Error {
-        Error::Message(format!("{}", msg))
-    }
-}
