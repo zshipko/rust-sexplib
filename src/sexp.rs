@@ -68,6 +68,22 @@ impl Sexp {
     }
 }
 
+impl<'a, T: Into<Sexp>> From<&'a [T]> for Sexp
+where
+    T: Clone,
+    Sexp: From<T>,
+{
+    fn from(t: &'a [T]) -> Sexp {
+        let mut dst = Vec::new();
+        for item in t {
+            dst.push(Sexp::from(item.clone()))
+        }
+
+        Sexp::List(dst)
+    }
+
+}
+
 impl From<Vec<Sexp>> for Sexp {
     fn from(v: Vec<Sexp>) -> Sexp {
         Sexp::List(v)
