@@ -19,11 +19,11 @@ macro_rules! atom {
 }
 
 impl Sexp {
-    pub fn atom<S: AsRef<str>>(s: &S) -> Sexp {
+    pub fn atom<S: AsRef<str>>(s: S) -> Sexp {
         Sexp::Atom(String::from(s.as_ref()))
     }
 
-    pub fn list<X: AsRef<[Sexp]>>(x: &X) -> Sexp {
+    pub fn list<X: AsRef<[Sexp]>>(x: X) -> Sexp {
         Sexp::List(x.as_ref().to_vec())
     }
 
